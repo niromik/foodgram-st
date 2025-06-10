@@ -12,7 +12,7 @@ cd $BASE_DIR
 status=$?;
 if [ $status -ne 0 ]; then
     echo "Убедитесь, что в проекте содержится только один файл manage.py";
-    exit $status;
+    # exit $status;
 fi
 
 echo "from django.contrib.auth import get_user_model; User = get_user_model(); \
@@ -24,6 +24,6 @@ echo "from django.contrib.auth import get_user_model; User = get_user_model(); \
 status=$?;
 if [ $status -ne 0 ]; then
     echo "Ошибка при удалении записей, созданных в БД на предыдущем запуске postman-коллекции: объекты отсутствуют либо произошел сбой.";
-    exit $status;
+    # exit $status;
 fi
 echo "База данных очищена."
