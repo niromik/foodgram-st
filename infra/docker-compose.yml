@@ -16,8 +16,6 @@ services:
 
   backend:
     container_name: foodgram-backend
-    depends_on:
-      - postgres
     build: ../backend
     volumes:
       - volume_static:/app/foodgram/static/
@@ -26,8 +24,6 @@ services:
 
   frontend:
     container_name: foodgram-front
-    depends_on:
-      - backend
     build: ../frontend
     volumes:
       - ../frontend/:/app/result_build/
@@ -35,8 +31,6 @@ services:
 
   nginx:
     container_name: foodgram-proxy
-    depends_on:
-      - backend
     image: nginx:1.25.4-alpine
     ports:
       - "80:80"

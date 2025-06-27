@@ -100,7 +100,7 @@ class Ingredient(models.Model):
         return self.name
 
 
-class Recipe(models.Model):
+class CulinaryRecipe(models.Model):
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -109,7 +109,7 @@ class Recipe(models.Model):
     )
     ingredients = models.ManyToManyField(
         Ingredient,
-        through='IngredientInRecipe',
+        through='RecipeIngredient',
         verbose_name='Ингредиенты'
     )
     name = models.CharField(
@@ -146,9 +146,9 @@ class Recipe(models.Model):
         return self.name
 
 
-class IngredientInRecipe(models.Model):
+class RecipeIngredient(models.Model):
     recipe = models.ForeignKey(
-        Recipe,
+        CulinaryRecipe,
         on_delete=models.CASCADE,
         related_name='ingredient_amounts',
         verbose_name='Рецепт'
@@ -170,11 +170,10 @@ class IngredientInRecipe(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return 'В рецепте ' + self.recipe.name + \
-            ' есть ' + self.ingredient.name + '.'
+        return f'В рецепте {self.recipe.name} есть {self.ingredient.name}.'
 
 
-class Favorite(models.Model):
+class UserFavoriteRecipe(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -182,7 +181,7 @@ class Favorite(models.Model):
         verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
-        Recipe,
+        CulinaryRecipe,
         on_delete=models.CASCADE,
         related_name='users_in_favorite',
         verbose_name='Рецепт'
@@ -200,11 +199,11 @@ class Favorite(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return 'Пользователь ' + self.user.username + \
-            ' добавил в Избранное ' + self.recipe.name + '.'
+        return f'Пользователь {self.user.username} добавил в Избранное \
+            {self.recipe.name}.'
 
 
-class ShoppingCart(models.Model):
+class UserShoppingCart(models.Model):
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -212,7 +211,7 @@ class ShoppingCart(models.Model):
         verbose_name='Пользователь'
     )
     recipe = models.ForeignKey(
-        Recipe,
+        CulinaryRecipe,
         on_delete=models.CASCADE,
         related_name='users_in_shopcart',
         verbose_name='Подписчик'
@@ -230,5 +229,4 @@ class ShoppingCart(models.Model):
         ordering = ('id',)
 
     def __str__(self):
-        return 'В корзине пользователя ' + self.user.username + \
-            ' лежит ' + self.recipe.name + '.'
+        return f'{self.user.username} добавил "{self.recipe.title}" в корзину.'

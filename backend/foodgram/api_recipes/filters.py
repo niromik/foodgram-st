@@ -1,13 +1,17 @@
 from django_filters.filters import CharFilter, ChoiceFilter
 from django_filters.rest_framework import FilterSet
 
-from core.models import Ingredient, Recipe
+from core.models import Ingredient, CulinaryRecipe
 
 
-class IngredientFilter(FilterSet):
+class IngredientSearchFilter(FilterSet):
+    """
+    Фильтр для поиска ингредиентов по частичному совпадению имени.
+    """
+
     name = CharFilter(
         field_name='name',
-        lookup_expr='istartswith',
+        lookup_expr='icontains',
     )
 
     class Meta:
@@ -15,36 +19,44 @@ class IngredientFilter(FilterSet):
         fields = ['name']
 
 
-class RecipeFilter(FilterSet):
-    STATUS_CHOICES = (
+class RecipeCustomFilter(FilterSet):
+    """
+    Кастомный фильтр для рецептов с дополнительными булевыми флагами.
+    """
+    CHOICES = (
         (0, False),
-        (1, True),
-        (False, False),
-        (True, True)
+        (1, True)
     )
     is_favorited = ChoiceFilter(
-        choices=STATUS_CHOICES,
-        method='get_is_favorited'
+        choices=CHOICES,
+        method='filter_is_favorited',
+        label='Is in favorites'
     )
     is_in_shopping_cart = ChoiceFilter(
-        choices=STATUS_CHOICES,
-        method='get_is_in_shopping_cart'
+        choices=CHOICES,
+        method='filter_is_in_shopping_cart',
+        label='Is in shopping cart'
     )
 
-    def get_is_favorited(self, queryset, name, value):
+    def filter_is_favorited(self, queryset, name, value):
+        """
+        Фильтрация рецептов, добавленных в избранное текущим пользователем.
+        """
         user = self.request.user
-        if user.is_authenticated and value:
-            return Recipe.objects.filter(users_in_favorite__user=user)
+        if value and user.is_authenticated:
+            return queryset.filter(users_in_favorite__user=user)
         return queryset
 
-    def get_is_in_shopping_cart(self, queryset, name, value):
+    def filter_is_in_shopping_cart(self, queryset, name, value):
+        """
+        Фильтрация рецептов, добавленных в корзину текущим пользователем."""
         user = self.request.user
-        if user.is_authenticated and value:
-            return Recipe.objects.filter(users_in_shopcart__user=user)
+        if value and user.is_authenticated:
+            return queryset.filter(users_in_shopcart__user=user)
         return queryset
 
     class Meta:
-        model = Recipe
+        model = CulinaryRecipe
         fields = [
             'author',
             'is_favorited',

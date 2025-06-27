@@ -3,18 +3,18 @@ from django.contrib.admin import register, ModelAdmin
 from django.contrib.auth.admin import UserAdmin
 
 from .models import (
-    Favorite,
+    UserFavoriteRecipe,
     Ingredient,
-    IngredientInRecipe,
-    Recipe,
-    ShoppingCart,
+    RecipeIngredient,
+    CulinaryRecipe,
+    UserShoppingCart,
     Subscription,
     User
 )
 
 
-@register(Favorite)
-class FavoriteConfig(ModelAdmin):
+@register(UserFavoriteRecipe)
+class FavoriteAdmin(ModelAdmin):
     list_display = [
         'id',
         'user',
@@ -23,7 +23,7 @@ class FavoriteConfig(ModelAdmin):
 
 
 @register(Ingredient)
-class IngredientConfig(ModelAdmin):
+class IngredientAdmin(ModelAdmin):
     list_display = [
         'id',
         'name',
@@ -33,8 +33,8 @@ class IngredientConfig(ModelAdmin):
     list_filter = ['measurement_unit']
 
 
-@register(IngredientInRecipe)
-class IngredientInRecipeConfig(ModelAdmin):
+@register(RecipeIngredient)
+class RecipeIngredientAdmin(ModelAdmin):
     list_display = [
         'id',
         'recipe',
@@ -43,8 +43,8 @@ class IngredientInRecipeConfig(ModelAdmin):
     ]
 
 
-@register(Recipe)
-class RecipeConfig(ModelAdmin):
+@register(CulinaryRecipe)
+class CulinaryRecipeAdmin(ModelAdmin):
     list_display = [
         'id',
         'author',
@@ -59,17 +59,17 @@ class RecipeConfig(ModelAdmin):
     list_filter = ['name', 'author']
     search_fields = ['name', 'author__username']
 
-    @admin.display(description='Количество ингредиентов')
+    @admin.display(description='Число ингредиентов')
     def ingredients(self, obj):
         return obj.ingredients.count()
 
-    @admin.display(description='Добвлено в Избранное')
+    @admin.display(description='В избранном')
     def favorites(self, obj):
         return obj.users_in_favorite.count()
 
 
-@register(ShoppingCart)
-class ShoppingCartConfig(ModelAdmin):
+@register(UserShoppingCart)
+class ShoppingCartAdmin(ModelAdmin):
     list_display = [
         'id',
         'user',
@@ -78,7 +78,7 @@ class ShoppingCartConfig(ModelAdmin):
 
 
 @register(Subscription)
-class SubscriptionConfig(ModelAdmin):
+class UserFollowAdmin(ModelAdmin):
     list_display = [
         'id',
         'user',
@@ -89,7 +89,7 @@ class SubscriptionConfig(ModelAdmin):
 
 
 @register(User)
-class UserConfig(UserAdmin):
+class CustomUserAdmin(UserAdmin):
     list_display = [
         'id',
         'email',

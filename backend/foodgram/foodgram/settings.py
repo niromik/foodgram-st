@@ -61,7 +61,7 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'foodgram.wsgi.application'
 
-if os.getenv('IS_SQLITE3', 'False').lower() in ['true', '1', 'yes']:
+if os.getenv('IS_SQLITE3', '0') == 1:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -127,9 +127,9 @@ REST_FRAMEWORK = {
 
 DJOSER = {
     'SERIALIZERS': {
-        'user': 'api_user.serializers.UserAccountSerializer',
-        'user_create': 'api_user.serializers.UserRegisterSerializer',
-        'current_user': 'api_user.serializers.UserAccountSerializer'
+        'user': 'api_user.serializers.CustomUserSerializer',
+        'user_create': 'api_user.serializers.CustomUserCreateSerializer',
+        'current_user': 'api_user.serializers.CustomUserSerializer'
     },
     'PERMISSIONS': {
         'user': ['djoser.permissions.CurrentUserOrAdminOrReadOnly'],
@@ -141,3 +141,16 @@ DJOSER = {
 }
 
 AUTH_USER_MODEL = 'core.User'
+
+AUTH_TOKEN_EXPIRES_AFTER = 60 * 60 * 24 * 7
+
+MAX_IMAGE_SIZE = 1024 * 1024 * 5
+ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png']
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+CACHE_TIMEOUT = 60 * 15

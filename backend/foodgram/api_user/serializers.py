@@ -5,7 +5,7 @@ from rest_framework import serializers
 from core.models import Subscription, User
 
 
-class UserAccountSerializer(UserSerializer):
+class CustomUserSerializer(UserSerializer):
     is_subscribed = serializers.SerializerMethodField(
         method_name='get_is_subscribed'
     )
@@ -32,7 +32,7 @@ class UserAccountSerializer(UserSerializer):
         ]
 
 
-class UserRegisterSerializer(UserCreateSerializer):
+class CustomUserCreateSerializer(UserCreateSerializer):
     class Meta:
         model = User
         fields = [
@@ -46,7 +46,7 @@ class UserRegisterSerializer(UserCreateSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-class AvatarUploadSerializer(serializers.ModelSerializer):
+class UserAvatarSerializer(serializers.ModelSerializer):
     avatar = drf_fields.Base64ImageField()
 
     def update(self, instance, validated_data):

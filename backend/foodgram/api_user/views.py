@@ -6,16 +6,16 @@ from rest_framework.response import Response
 
 from core.models import Subscription, User
 
-from api.pagination import SizeLimitPagination
-from api_recipes.serializers import UserWithRecipeSerializer
-from .serializers import AvatarUploadSerializer, UserAccountSerializer
+from api.pagination import CustomPageNumberPagination
+from api_recipes.serializers import UserSubscriptionSerializer
+from .serializers import UserAvatarSerializer, CustomUserSerializer
 
 
-class UserAccountViewSet(UserViewSet):
+class CustomUserViewSet(UserViewSet):
     queryset = User.objects.all()
-    serializer_class = UserAccountSerializer
+    serializer_class = CustomUserSerializer
     permission_classes = [permissions.IsAuthenticatedOrReadOnly]
-    pagination_class = SizeLimitPagination
+    pagination_class = CustomPageNumberPagination
 
     @action(
         detail=False,
@@ -33,7 +33,7 @@ class UserAccountViewSet(UserViewSet):
     )
     def avatar(self, request, id):
         if request.method == 'PUT':
-            serializer = AvatarUploadSerializer(
+            serializer = UserAvatarSerializer(
                 request.user,
                 data=request.data,
                 partial=True
@@ -55,7 +55,7 @@ class UserAccountViewSet(UserViewSet):
     def subscriptions(self, request):
         queryset = User.objects.filter(subscribed__user=request.user)
         pages = self.paginate_queryset(queryset)
-        serializer = UserWithRecipeSerializer(
+        serializer = UserSubscriptionSerializer(
             pages,
             many=True,
             context={'request': request}
@@ -75,7 +75,7 @@ class UserAccountViewSet(UserViewSet):
             if subscriber == user or sub.exists():
                 return Response(status=status.HTTP_400_BAD_REQUEST)
             Subscription.objects.create(user=subscriber, subscribed_to=user)
-            serializer = UserWithRecipeSerializer(
+            serializer = UserSubscriptionSerializer(
                 user,
                 context={
                     'request': request,
